@@ -1,7 +1,9 @@
+using UserRoles.Commands;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UserRoles.Data;
 using UserRoles.Models;
+using UserRoles.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +15,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 builder.Services.AddIdentity<Users, IdentityRole>(options =>
-
 {
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
@@ -31,6 +32,19 @@ builder.Services.AddIdentity<Users, IdentityRole>(options =>
 
 var app = builder.Build();
 
+await SeedService.SeedDatabase(app.Services);
+
+// Interceptar comandos ANTES de levantar el servidor
+using (var scope = app.Services.CreateScope())
+{
+    bool wasCommand = await CommandRunner.TryRunAsync(args, scope.ServiceProvider);
+
+    if (wasCommand)
+    {
+        return; // termina el programa sin levantar el sitio web
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -40,6 +54,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseRouting();
 
 app.UseAuthentication();
@@ -52,6 +67,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
