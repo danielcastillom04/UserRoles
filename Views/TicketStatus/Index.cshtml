@@ -27,7 +27,7 @@
                     <td>
                         <a asp-controller="TicketStatus" asp-action="Edit" asp-route-id="@status.Id" class="btn btn-primary">Edit
                         </a>
-                        <form asp-controller="TicketStatus" asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('¿Seguro que desas elminar este registro?');">
+                        <form asp-controller="TicketStatus" asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('¿Seguro que desas eliminar este registro?');">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@status.Id" />
                             <button type="submit" class="btn btn-danger">
