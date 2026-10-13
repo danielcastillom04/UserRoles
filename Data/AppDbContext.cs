@@ -1,50 +1,61 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using UserRoles.Models;
-using UserRoles.Models;
-
 
 namespace UserRoles.Data
 {
     public class AppDbContext : IdentityDbContext<Users>
     {
         public DbSet<TicketStatus> TicketStatus { get; set; }
-        public AppDbContext(DbContextOptions options) : base(options)
+        public DbSet<TicketPriority> TicketPriorities { get; set; }
 
+        public AppDbContext(DbContextOptions options) : base(options)
         {
         }
-        protected override void OnModelCreating(ModelBuilder builder)
 
+        protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling
-            base.OnModelCreating(builder);
+            // Configuración de Tablas
+            builder.Entity<TicketStatus>().ToTable("TablaTicketStatus");
+            builder.Entity<TicketPriority>().ToTable("TablaTicketPriority");
 
-            builder.Entity<TicketStatus>()
-            .ToTable("TablaTicketStatus");
+            // Configuración de Users
+            builder.Entity<Users>()
+                .Property(u => u.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Entity<Users>()
-            .Property(u => u.CreatedAt)
-            .HasDefaultValueSql("GETUTCDATE()");  // SQL Server
+                .Property(u => u.UpdatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.Entity<Users>()
-            .Property(u => u.UpdatedAt)
-            .HasDefaultValueSql("GETUTCDATE()");  // SQL Server}
-
+            // Configuración de TicketStatus
             builder.Entity<TicketStatus>()
-            .Property(u => u.CreatedAt)
-            .HasDefaultValueSql("GETUTCDATE()");  // SQL Server}
-            
-            builder.Entity<TicketStatus>()
-            .Property(u => u.UpdatedAt)
-            .HasDefaultValueSql("GETUTCDATE()");  // SQL Server}
+                .Property(u => u.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Entity<TicketStatus>()
-            .HasIndex(ts => ts.Name)
-            .IsUnique();
+                .Property(u => u.UpdatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.Entity<TicketStatus>()
+                .HasIndex(ts => ts.Name)
+                .IsUnique();
+
+            // Configuración de TicketPriority
+            builder.Entity<TicketPriority>()
+                .Property(u => u.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.Entity<TicketPriority>()
+                .Property(u => u.UpdatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.Entity<TicketPriority>()
+                .HasIndex(tp => tp.Name)
+                .IsUnique();
+
         }
     }
 }
